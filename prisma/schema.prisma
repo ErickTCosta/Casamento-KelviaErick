@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Setting {
+  id         Int    @id @default(1)
+  coupleName String @default("Kelvia & Erick")
+
+  @@map("Setting")
+}
+
+model AdminUser {
+  id           Int      @id @default(1)
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+
+  @@map("AdminUser")
+}
+
+model Invite {
+  id        String   @id @default(uuid()) @db.Uuid
+  label     String
+  people    Person[]
+  message   String?
+  confirmed Boolean  @default(false)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  @@map("Invite")
+}
+
+model Person {
+  id         String     @id @default(uuid()) @db.Uuid
+  name       String
+  status     RSVPStatus @default(PENDING)
+  answeredAt DateTime?  @db.Timestamptz(3)
+  inviteId   String     @db.Uuid
+  invite     Invite     @relation(fields: [inviteId], references: [id], onDelete: Cascade)
+
+  @@index([inviteId])
+  @@map("Person")
+}
+
+model Gift {
+  id          String   @id @default(uuid()) @db.Uuid
+  title       String
+  description String
+  link        String?
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+
+  @@map("Gift")
+}
+
+enum RSVPStatus {
+  PENDING
+  GO
+  NO
+
+  @@map("RSVPStatus")
+}
