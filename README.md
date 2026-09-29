@@ -19,7 +19,7 @@ O servidor de desenvolvimento usa `.next-dev`, separada de `.next`, usada no bui
 
 ## Publicação na Vercel
 
-Configure na Vercel as variáveis `DATABASE_URL`, `DIRECT_URL`, `ADMIN_SETUP_TOKEN` e `NEXT_PUBLIC_SITE_URL` para os ambientes desejados. Use a URI Supabase de pooler em modo transação em `DATABASE_URL` e a URI de pooler em modo sessão em `DIRECT_URL`. Nunca publique credenciais no repositório. Depois de concluir o primeiro cadastro do administrador, remova `ADMIN_SETUP_TOKEN` da Vercel e faça um novo deploy.
+Configure na Vercel as variáveis `DATABASE_URL`, `DIRECT_URL`, `ADMIN_SETUP_TOKEN` e `NEXT_PUBLIC_SITE_URL` para os ambientes desejados. Use em `NEXT_PUBLIC_SITE_URL` a URL pública que deve ser copiada nos convites (preferencialmente um domínio de produção estável, sem barra no final), e não a URL de um deployment de preview. Use a URI Supabase de pooler em modo transação em `DATABASE_URL` e a URI de pooler em modo sessão em `DIRECT_URL`. Nunca publique credenciais no repositório. Depois de concluir o primeiro cadastro do administrador, remova `ADMIN_SETUP_TOKEN` da Vercel e faça um novo deploy.
 
 Antes do primeiro deploy, execute `npm run db:migrate` e `npm run db:seed` a partir de um ambiente seguro que tenha as URLs configuradas. O build da Vercel gera o Prisma Client automaticamente.
 
