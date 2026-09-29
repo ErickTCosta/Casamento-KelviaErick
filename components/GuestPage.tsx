@@ -118,9 +118,7 @@ export function GuestPage({ inviteId }: { inviteId?: string }) {
               ? "Obrigado por responder!"
               : "Sua confirmação é muito importante!"}
           </span>
-          {invite.confirmed ? (
-            <strong>Sua resposta foi registrada com sucesso.</strong>
-          ) : (
+          {invite.confirmed ? null : (
             <>
               <strong>
                 Confirme sua presença até 10 de outubro de 2026.

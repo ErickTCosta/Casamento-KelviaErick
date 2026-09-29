@@ -77,9 +77,10 @@ describe("GuestPage RSVP interface", () => {
 
     render(<GuestPage inviteId="invite-1" />);
 
+    await screen.findByText("Obrigado por responder ao convite.");
     expect(
-      await screen.findByText("Sua resposta foi registrada com sucesso."),
-    ).toBeTruthy();
+      screen.queryByText("Sua resposta foi registrada com sucesso."),
+    ).toBeNull();
     expect(screen.queryByText("Convidada Principal")).toBeNull();
     expect(screen.queryByText("Acompanhante")).toBeNull();
     expect(screen.queryByText("Vai")).toBeNull();
@@ -121,10 +122,11 @@ describe("GuestPage RSVP interface", () => {
     fireEvent.click(screen.getByRole("button", { name: "Confirmar presença" }));
 
     await waitFor(() => {
-      expect(
-        screen.getByText("Sua resposta foi registrada com sucesso."),
-      ).toBeTruthy();
+      expect(screen.getByText("Obrigado por responder ao convite.")).toBeTruthy();
     });
+    expect(
+      screen.queryByText("Sua resposta foi registrada com sucesso."),
+    ).toBeNull();
     expect(fetchMock).toHaveBeenCalledWith(
       "/api/invites/invite-1/response",
       expect.objectContaining({ method: "POST" }),
