@@ -11,6 +11,7 @@ datasource db {
 model Setting {
   id         Int    @id @default(1)
   coupleName String @default("Kelvia & Erick")
+  pixKey     String?
 
   @@map("Setting")
 }

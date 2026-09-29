@@ -33,8 +33,21 @@ export async function PUT(request: Request) {
   }
   const setting = await prisma.setting.upsert({
     where: { id: 1 },
-    update: { coupleName: body.coupleName.trim() },
-    create: { id: 1, coupleName: body.coupleName.trim() },
+    update: {
+      coupleName: body.coupleName.trim(),
+      pixKey:
+        "pixKey" in body && typeof body.pixKey === "string"
+          ? body.pixKey.trim() || null
+          : undefined,
+    },
+    create: {
+      id: 1,
+      coupleName: body.coupleName.trim(),
+      pixKey:
+        "pixKey" in body && typeof body.pixKey === "string"
+          ? body.pixKey.trim() || null
+          : null,
+    },
   });
   return NextResponse.json(setting);
 }

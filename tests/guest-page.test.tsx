@@ -87,7 +87,11 @@ describe("GuestPage RSVP interface", () => {
     expect(screen.queryByLabelText(/Mensagem para os noivos/)).toBeNull();
     expect(screen.getByText("Obrigado pelo convite!")).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Confirmar presença" })).toBeNull();
-    expect(screen.getByText("Lista de presentes")).toBeTruthy();
+    expect(screen.queryByText("Lista de presentes")).toBeNull();
+    expect(screen.queryByText("Obrigado por confirmar! Nossa lista de presentes está disponível abaixo.")).toBeNull();
+    expect(screen.queryByText("CONTRIBUIÇÃO")).toBeNull();
+    expect(screen.getByText("R$ 250,00, R$ 300,00")).toBeTruthy();
+    expect(screen.getByText("OU MAIS")).toBeTruthy();
   });
 
   it("submits all invitee choices and switches to the confirmation-only view", async () => {

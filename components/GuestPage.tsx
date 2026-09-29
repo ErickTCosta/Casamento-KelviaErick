@@ -3,13 +3,6 @@
 import { useEffect, useState } from "react";
 import type { GuestInvite, RSVPStatus } from "@/lib/types";
 
-type GuestGift = {
-  id: string;
-  title: string;
-  description: string;
-  link: string | null;
-};
-
 export function GuestPage({ inviteId }: { inviteId?: string }) {
   const [invite, setInvite] = useState<GuestInvite | null>(null);
   const [message, setMessage] = useState("");
@@ -203,11 +196,6 @@ export function GuestPage({ inviteId }: { inviteId?: string }) {
       </section>
       {invite.confirmed && (
         <section className="card">
-          <h2 className="serif">Lista de presentes</h2>
-          <p className="status">
-            Obrigado por confirmar! Nossa lista de presentes está disponível
-            abaixo.
-          </p>
           <Gifts />
         </section>
       )}
@@ -218,7 +206,7 @@ export function GuestPage({ inviteId }: { inviteId?: string }) {
 function Header() {
   return (
     <header className="hero">
-      <div className="small">Com muito amor, vamos dizer o nosso</div>
+      <div className="small">Com muito amor, vamos dizer o nosso SIM</div>
       <h1>Kelvia & Erick</h1>
       <p>26 de dezembro de 2026 · 18:30 · Capela São Francisco de Assis</p>
     </header>
@@ -226,31 +214,34 @@ function Header() {
 }
 
 function Gifts() {
-  const [gifts, setGifts] = useState<GuestGift[]>([]);
+  const [pixKey, setPixKey] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/api/invites/gifts")
+    fetch("/api/settings")
       .then((response) => {
-        if (!response.ok) throw new Error("Não foi possível carregar os presentes.");
-        return response.json();
+        if (!response.ok) throw new Error("Não foi possível carregar as configurações.");
+        return response.json() as Promise<{ pixKey: string | null }>;
       })
-      .then(setGifts)
-      .catch(() => setGifts([]));
+      .then((settings) => setPixKey(settings.pixKey))
+      .catch(() => setPixKey(null));
   }, []);
 
   return (
-    <>
-      {gifts.map((gift) => (
-        <div className="gift" key={gift.id}>
-          <b>{gift.title}</b>
-          <div className="status">{gift.description}</div>
-          {gift.link && (
-            <a href={gift.link} target="_blank" rel="noreferrer">
-              Ver presente
-            </a>
-          )}
-        </div>
-      ))}
-    </>
+    <div className="gift-list">
+      <p className="gift-intro">
+        Para nós, o maior presente será compartilhar este momento especial ao
+        seu lado. Caso queira nos presentear de outra forma, aceitamos seu
+        carinho em forma de PIX.
+      </p>
+      <div className="gift-tier gift-tier-pix">
+        <span>R$ 250,00, R$ 300,00</span>
+        <small>OU MAIS</small>
+      </div>
+      <div className="pix-box">
+        <strong>PIX</strong>
+        <p>Use a chave PIX dos noivos para enviar seu presente.</p>
+        <code>{pixKey ? `Chave PIX: ${pixKey}` : "Chave PIX ainda não cadastrada"}</code>
+      </div>
+    </div>
   );
 }

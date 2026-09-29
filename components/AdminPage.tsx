@@ -23,6 +23,7 @@ export function AdminPage(){
   const [names,setNames]=useState('');
   const [label,setLabel]=useState('');
   const [couple,setCouple]=useState('Kelvia & Erick');
+  const [pixKey,setPixKey]=useState('');
   const [gift,setGift]=useState({title:'',description:'',link:''});
 
   const adminFetch=useCallback((input:RequestInfo|URL,init?:RequestInit)=>fetch(input,init).then(response=>{
@@ -67,7 +68,7 @@ export function AdminPage(){
       adminFetch('/api/admin/settings').then(r=>{
         if(!r.ok)throw new Error("Não foi possível carregar as configurações.");
         return r.json();
-      }).then(x=>setCouple(x.coupleName)).catch(()=>setAuthError("Não foi possível carregar os dados administrativos."));
+      }).then(x=>{setCouple(x.coupleName);setPixKey(x.pixKey??'')}).catch(()=>setAuthError("Não foi possível carregar os dados administrativos."));
       return ()=>window.clearInterval(refreshInterval);
     }
   },[authenticated,adminFetch,load]);
@@ -108,7 +109,7 @@ export function AdminPage(){
 
   const create=async()=>{await adminFetch('/api/admin/invites',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({label,names})});setNames('');setLabel('');load()};
   const remove=async(id:string)=>{if(confirm('Remover convite?')){await adminFetch(`/api/admin/invites/${id}`,{method:'DELETE'});load()}};
-  const save=async()=>{await adminFetch('/api/admin/settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({coupleName:couple})})};
+  const save=async()=>{await adminFetch('/api/admin/settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({coupleName:couple,pixKey})})};
   const addGift=async()=>{await adminFetch('/api/admin/gifts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(gift)});setGift({title:'',description:'',link:''});load()};
   const delGift=async(id:string)=>{await adminFetch(`/api/admin/gifts/${id}`,{method:'DELETE'});load()};
   const people=data?.invites.flatMap(invite=>invite.people)??[];
@@ -148,7 +149,7 @@ export function AdminPage(){
         {visibleInvites.length===0&&<tr><td colSpan={4}>Nenhum convidado encontrado para esse filtro.</td></tr>}
       </tbody></table></div>
     </section>
-    <section className="card"><h2 className="serif">Dados do casamento</h2><label>Nome dos noivos</label><input value={couple} onChange={e=>setCouple(e.target.value)}/><br/><br/><button className="btn" onClick={save}>Salvar</button></section>
+    <section className="card"><h2 className="serif">Dados do casamento</h2><label htmlFor="couple-name">Nome dos noivos</label><input id="couple-name" value={couple} onChange={e=>setCouple(e.target.value)}/><label htmlFor="pix-key">Chave PIX</label><input id="pix-key" value={pixKey} onChange={e=>setPixKey(e.target.value)} placeholder="CPF, e-mail, telefone ou chave aleatória"/><p className="status">Essa chave será exibida aos convidados após a confirmação.</p><br/><button className="btn" onClick={save}>Salvar</button></section>
     <section className="card"><h2 className="serif">Novo convite</h2><div className="grid"><div><label>Rótulo</label><input value={label} onChange={e=>setLabel(e.target.value)} placeholder="Família Oliveira"/></div><div><label>Nomes separados por vírgula</label><input value={names} onChange={e=>setNames(e.target.value)} placeholder="Roberto Oliveira, Sandra Oliveira"/></div></div><br/><button className="btn" onClick={create}>Criar convite</button></section>
     <section className="card"><h2 className="serif">Convites</h2><div style={{overflowX:'auto'}}><table><thead><tr><th>Convite</th><th>Pessoas</th><th>Link</th><th>Ações</th></tr></thead><tbody>{data?.invites.map(x=><tr key={x.id}><td>{x.label}</td><td>{x.people.map(p=><div key={p.id}><b>{p.name}</b> <span className={`tag ${p.status==='GO'?'go':p.status==='NO'?'no':'pending'}`}>{p.status==='GO'?'Vai':p.status==='NO'?'Não vai':'Pendente'}</span></div>)}</td><td><input readOnly value={`${location.origin}?id=${x.id}`} onFocus={e=>e.currentTarget.select()}/></td><td><button className="btn alt" onClick={()=>navigator.clipboard.writeText(`${location.origin}?id=${x.id}`)}>Copiar</button> <button className="btn" onClick={()=>remove(x.id)}>Remover</button></td></tr>)}</tbody></table></div></section>
     <section className="card"><h2 className="serif">Lista de presentes</h2><div className="grid"><div><label>Título</label><input value={gift.title} onChange={e=>setGift({...gift,title:e.target.value})}/></div><div><label>Descrição</label><input value={gift.description} onChange={e=>setGift({...gift,description:e.target.value})}/></div></div><label>Link opcional</label><input value={gift.link} onChange={e=>setGift({...gift,link:e.target.value})}/><br/><br/><button className="btn" onClick={addGift}>Adicionar presente</button><div>{data?.gifts.map(g=><div className="gift" key={g.id}><b>{g.title}</b><div className="status">{g.description}</div><button className="btn alt" onClick={()=>delGift(g.id)}>Remover</button></div>)}</div></section>
