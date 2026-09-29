@@ -14,6 +14,26 @@ function getGuestInviteUrl(inviteId:string){
   return `${siteUrl}/?id=${inviteId}`;
 }
 
+function getInvitationMessage(inviteUrl:string){
+  return `Com a bênção de Deus e o coração cheio de amor,
+
+chegou o momento de celebrar o nosso “sim” e iniciar uma nova etapa da nossa história.
+
+Depois de tantos sonhos, orações e momentos compartilhados, queremos viver este dia tão especial ao lado das pessoas que amamos.
+
+“Para que vejam, saibam, considerem e compreendam que a mão do Senhor fez isso.”
+Isaías 41:20 🤍
+
+Será uma alegria imensa ter você conosco para celebrar o nosso amor, a nossa união e o início da nossa família.
+
+Para confirmar sua presença, basta acessar o link abaixo e preencher a confirmação:
+${inviteUrl}
+
+Kelvia & Erick 💍✨
+
+Com carinho, esperamos por você!`;
+}
+
 export function AdminPage(){
   const [authenticated,setAuthenticated]=useState<boolean|null>(null);
   const [setupRequired,setSetupRequired]=useState(false);
@@ -157,7 +177,7 @@ export function AdminPage(){
     </section>
     <section className="card"><h2 className="serif">Dados do casamento</h2><label htmlFor="couple-name">Nome dos noivos</label><input id="couple-name" value={couple} onChange={e=>setCouple(e.target.value)}/><label htmlFor="pix-key">Chave PIX</label><input id="pix-key" value={pixKey} onChange={e=>setPixKey(e.target.value)} placeholder="CPF, e-mail, telefone ou chave aleatória"/><p className="status">Essa chave será exibida aos convidados após a confirmação.</p><br/><button className="btn" onClick={save}>Salvar</button></section>
     <section className="card"><h2 className="serif">Novo convite</h2><div className="grid"><div><label>Rótulo</label><input value={label} onChange={e=>setLabel(e.target.value)} placeholder="Família Oliveira"/></div><div><label>Nomes separados por vírgula</label><input value={names} onChange={e=>setNames(e.target.value)} placeholder="Roberto Oliveira, Sandra Oliveira"/></div></div><br/><button className="btn" onClick={create}>Criar convite</button></section>
-    <section className="card"><h2 className="serif">Convites</h2><div style={{overflowX:'auto'}}><table><thead><tr><th>Convite</th><th>Pessoas</th><th>Link</th><th>Ações</th></tr></thead><tbody>{data?.invites.map(x=>{const inviteUrl=getGuestInviteUrl(x.id);return <tr key={x.id}><td>{x.label}</td><td>{x.people.map(p=><div key={p.id}><b>{p.name}</b> <span className={`tag ${p.status==='GO'?'go':p.status==='NO'?'no':'pending'}`}>{p.status==='GO'?'Vai':p.status==='NO'?'Não vai':'Pendente'}</span></div>)}</td><td><input readOnly value={inviteUrl} onFocus={e=>e.currentTarget.select()}/></td><td><button className="btn alt" onClick={()=>navigator.clipboard.writeText(inviteUrl)}>Copiar</button> <button className="btn" onClick={()=>remove(x.id)}>Remover</button></td></tr>})}</tbody></table></div></section>
+    <section className="card"><h2 className="serif">Convites</h2><div style={{overflowX:'auto'}}><table><thead><tr><th>Convite</th><th>Pessoas</th><th>Link</th><th>Ações</th></tr></thead><tbody>{data?.invites.map(x=>{const inviteUrl=getGuestInviteUrl(x.id);return <tr key={x.id}><td>{x.label}</td><td>{x.people.map(p=><div key={p.id}><b>{p.name}</b> <span className={`tag ${p.status==='GO'?'go':p.status==='NO'?'no':'pending'}`}>{p.status==='GO'?'Vai':p.status==='NO'?'Não vai':'Pendente'}</span></div>)}</td><td><input readOnly value={inviteUrl} onFocus={e=>e.currentTarget.select()}/></td><td><button className="btn alt" onClick={()=>navigator.clipboard.writeText(inviteUrl)}>Copiar link</button> <button className="btn alt" onClick={()=>navigator.clipboard.writeText(getInvitationMessage(inviteUrl))}>Copiar mensagem</button> <button className="btn" onClick={()=>remove(x.id)}>Remover</button></td></tr>})}</tbody></table></div></section>
     <section className="card"><h2 className="serif">Lista de presentes</h2><div className="grid"><div><label>Título</label><input value={gift.title} onChange={e=>setGift({...gift,title:e.target.value})}/></div><div><label>Descrição</label><input value={gift.description} onChange={e=>setGift({...gift,description:e.target.value})}/></div></div><label>Link opcional</label><input value={gift.link} onChange={e=>setGift({...gift,link:e.target.value})}/><br/><br/><button className="btn" onClick={addGift}>Adicionar presente</button><div>{data?.gifts.map(g=><div className="gift" key={g.id}><b>{g.title}</b><div className="status">{g.description}</div><button className="btn alt" onClick={()=>delGift(g.id)}>Remover</button></div>)}</div></section>
   </main>
 }
