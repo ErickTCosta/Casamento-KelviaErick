@@ -121,7 +121,7 @@ export function GuestPage({ inviteId }: { inviteId?: string }) {
           {invite.confirmed ? null : (
             <>
               <strong>
-                Confirme sua presença até 10 de outubro de 2026.
+                Confirme sua presença até 25 de outubro de 2026.
               </strong>
               <span className="status">
                 Após essa data, encerraremos as confirmações para a organização
